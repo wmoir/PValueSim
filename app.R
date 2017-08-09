@@ -3,28 +3,41 @@ library(shiny)
 ui <- shinyUI(
   fluidPage(
   titlePanel("Which P-Values Can You Expect?"),
-  sidebarLayout(
-    sidebarPanel(
-      numericInput("nSims", "Number of simulation: ", 1000, min = 1, max = 100000),
-      numericInput("M", "Mean: ", 106),
-      numericInput("n", "N: ", 26),
-      numericInput("SD", "SD: ", 15),
-      actionButton("go", "Draw the plot"),
-      numericInput("bars", "Number of bars in histogram: ", 20),
-      sliderInput("xlim", "Range of x-axis", min = 0, max = 1, step = .05,
-                  value = c(0, 1)),
-      sliderInput("ylim", "Range of y-axis", min = 0, max = 100, step = 5,
-                  value = c(0, 100)),
-      p("The idea and code for this simulation are by Daniel Lakens, and are part of his Coursera course",
-        a("Improving your statistical inferences",
-          href = "https://www.coursera.org/learn/statistical-inferences/",
-          target = "_blank")
-      )
+  
+  plotOutput("pplot", height=600),
+  
+  hr(),
+  
+  fluidRow(
+    column(3,
+           #hr("Simulation Inputs"),
+           numericInput("nSims", "Number of simulation: ", 1000, min = 1, max = 100000),
+           numericInput("M", "Mean: ", 106)
+         
+           ),
+    column(3,
+           numericInput("n", "N: ", 26),
+           numericInput("SD", "SD: ", 15),
+           actionButton("go", "Draw the plot") 
+           ),
+    column(3, 
+          # hr("Plot Parameters"),
+           sliderInput("xlim", "Range of x-axis", min = 0, max = 1, step = .05,
+                       value = c(0, 1)),
+           sliderInput("ylim", "Range of y-axis", min = 0, max = 100, step = 5,
+                       value = c(0, 100))
+
     ),
-    mainPanel(plotOutput("pplot"))
+    column(3,
+           numericInput("bars", "Number of bars in histogram: ", 20),
+           p("The idea and code for this simulation are by Daniel Lakens, and are part of his Coursera course",
+             a("Improving your statistical inferences",
+               href = "https://www.coursera.org/learn/statistical-inferences/",
+               target = "_blank") )
+  )
   )
 ))
-
+ 
 
 server <- shinyServer(
   function(input, output, session) {
@@ -89,7 +102,7 @@ server <- shinyServer(
     
     #Plot figure
     #png(file="P-valueDist.png",width=4000,height=3000, , units = "px", res = 500)
-    op <- par(mar = c(5,7,4,4)) #change white-space around graph
+   # op <- par(mar = c(5,7,4,4)) #change white-space around graph
     h <- hist(d, breaks=bars)
     h$density <- h$counts/sum(h$counts)*100
     plot(h,freq=FALSE,
